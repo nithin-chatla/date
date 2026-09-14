@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Target: Dec 30</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            /* Intense, focused dark background */
+            background: linear-gradient(135deg, #050505 0%, #1a0b0b 100%);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* Ambient glow effect in the background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80vw;
+            height: 80vw;
+            max-width: 600px;
+            max-height: 600px;
+            background: radial-gradient(circle, rgba(220, 38, 38, 0.15) 0%, rgba(0,0,0,0) 70%);
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            animation: breathe 4s infinite ease-in-out;
+        }
+
+        .header {
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 1.2rem;
+            color: #ef4444; /* Urgent Red */
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        .countdown-container {
+            display: flex;
+            flex-direction: column; /* Arranges items in a column */
+            gap: 1.5rem;
+            align-items: center;
+            width: 100%;
+        }
+
+        .time-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px 40px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            transition: transform 0.2s ease;
+        }
+
+        .time-row:hover {
+            transform: scale(1.02);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .value {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #ffffff;
+            font-variant-numeric: tabular-nums; /* Keeps numbers from shifting width */
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .label {
+            font-size: 1.5rem;
+            color: #9ca3af;
+            font-weight: 400;
+            text-transform: lowercase;
+            letter-spacing: 1px;
+        }
+
+        /* Special intense styling for the seconds row */
+        .seconds-row .value {
+            color: #ef4444;
+            animation: heartbeat 1s infinite;
+        }
+
+        .footer-message {
+            margin-top: 3rem;
+            font-size: 1rem;
+            color: #6b7280;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        #expired-message {
+            display: none;
+            font-size: 3rem;
+            color: #ef4444;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            animation: blink 1s infinite;
+        }
+
+        /* Animations to create a feeling of time passing */
+        @keyframes heartbeat {
+            0% { transform: scale(1); text-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
+            15% { transform: scale(1.05); text-shadow: 0 0 20px rgba(239, 68, 68, 0.6); }
+            30% { transform: scale(1); text-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes breathe {
+            0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+            .value { font-size: 3rem; }
+            .label { font-size: 1.2rem; }
+            .time-row { padding: 10px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header" id="header">Exam Date Approaching</div>
+    
+    <div class="countdown-container" id="countdown">
+        <div class="time-row">
+            <span class="value" id="days">00</span>
+            <span class="label">days</span>
+        </div>
+        <div class="time-row">
+            <span class="value" id="hours">00</span>
+            <span class="label">hours</span>
+        </div>
+        <div class="time-row">
+            <span class="value" id="minutes">00</span>
+            <span class="label">min</span>
+        </div>
+        <div class="time-row seconds-row">
+            <span class="value" id="seconds">00</span>
+            <span class="label">sec</span>
+        </div>
+    </div>
+
+    <div class="footer-message" id="footer">Every second counts. Stay focused.</div>
+
+    <div id="expired-message">IT IS TIME.</div>
+
+    <script>
+        // Target date set firmly to December 30 of the current year at 00:00:00 (Midnight)
+        const currentYear = new Date().getFullYear();
+        const targetDate = new Date(`December 30, ${currentYear} 00:00:00`).getTime();
+
+        const countdownInterval = setInterval(function() {
+            // Get exact current local time
+            const now = new Date().getTime();
+
+            // Find the exact distance
+            const distance = targetDate - now;
+
+            // Math for Days, Hours, Minutes, Seconds
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Output to the DOM (with zero-padding to keep the layout locked in place)
+            document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+            document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+            document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+
+            // Stop logic when the target is reached
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("countdown").style.display = "none";
+                document.getElementById("header").style.display = "none";
+                document.getElementById("footer").style.display = "none";
+                document.getElementById("expired-message").style.display = "block";
+            }
+        }, 1000);
+    </script>
+
+</body>
+</html>
